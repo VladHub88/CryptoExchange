@@ -26,22 +26,14 @@ class _CryptocurrencySearchTextFormState extends State<CryptocurrencySearchTextF
       key: _formKey,
       child: Padding(
         padding: EdgeInsets.all(16.0),
-        child: TextFormField(
+        child: TextField(
           controller: searchController,
-            autovalidate: false,
-            decoration: InputDecoration(
-                labelText: 'Cryptocurrency symbol',
-                suffixIcon: IconButton(icon: Icon(Icons.search), onPressed: () {
-                  if (_formKey.currentState.validate()) {
-                    onChanged(searchController.text);
-                  }
-                })
-            ),
-            validator: (symbol) {
-              if (symbol.length > 0 && symbol.length < 3) {
-                return 'Must be at least 3 characters';
-              }
-            }
+          decoration: InputDecoration(
+            labelText: 'Search cryptocurrency',
+          ),
+          onChanged: (text) {
+            onChanged(text);
+          },
         ),
       ),
     );
