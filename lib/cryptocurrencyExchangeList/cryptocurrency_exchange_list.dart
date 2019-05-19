@@ -9,8 +9,9 @@ import 'package:flutter/material.dart';
 class CryptocurrencyExchangeList extends StatefulWidget {
 
   final Cryptocurrency cryptocurrency;
+  final Image cryptocurrencyIcon;
 
-  const CryptocurrencyExchangeList({Key key, this.cryptocurrency}) : super(key: key);
+  const CryptocurrencyExchangeList({Key key, this.cryptocurrency, this.cryptocurrencyIcon}) : super(key: key);
 
   @override
   _CryptocurrencyExchangeListState createState() => _CryptocurrencyExchangeListState();
@@ -23,7 +24,18 @@ class _CryptocurrencyExchangeListState extends State<CryptocurrencyExchangeList>
   @override
   Widget build(BuildContext context) {
     _appBar = AppBar(
-      title: Text('${widget.cryptocurrency.name}'),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Hero(
+              tag: widget.cryptocurrency.id,
+              child: CircleAvatar(
+                  child: widget.cryptocurrencyIcon,
+                  backgroundColor: Colors.transparent
+              ),
+            ),
+            Text('${widget.cryptocurrency.name}')
+          ],)
     );
 
     _cryptocurrencyExchangeBlock = CryptocurrencyExchangeBlock(
@@ -64,10 +76,16 @@ class _CryptocurrencyExchangeListState extends State<CryptocurrencyExchangeList>
                   .of(context)
                   .size
                   .height -  3 * appBarHeight,
-              child: Center(child: Text(snapshot.error != null
-                  ? 'Error occured  (╯°□°）╯︵ ┻━┻ '
-                  : 'No data  (╯°□°）╯︵ ┻━┻ ')
-              ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    Image.asset(
+                      'assets/generic/nothingfound.png',
+                    ),
+                    Text(snapshot.error != null ? 'Error occured' : 'Nothing found')
+                  ],
+                )
             )
           ],
         );

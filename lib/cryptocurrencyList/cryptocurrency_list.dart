@@ -13,18 +13,24 @@ class CryptocurrencyList extends StatefulWidget {
 
 class _CryptocurrencyListState extends State<CryptocurrencyList> {
 
+  AppBar get appBar => _appBar;
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey = new GlobalKey<RefreshIndicatorState>();
 
   @override
-  Widget build(BuildContext context) {
+  void didChangeDependencies() {
     if (_block == null) {
       _block = CryptocurrencyBlock(cryptocurrencyManager: Provider
           .of(context)
           .cryptocurrencyManager);
     }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    _appBar = AppBar(title: Text('Currency Exchange List'));
 
     return Scaffold(
-        appBar: AppBar(title: Text('Currency Exchange List')),
+        appBar: _appBar,
         body: Center(
             child: Column(
               children: <Widget>[
@@ -32,7 +38,10 @@ class _CryptocurrencyListState extends State<CryptocurrencyList> {
                   _block.setSearchString(searchString);
                 }),
                 Expanded(
-                  child: _mainWidget(shouldReloadOnStart: !_block.initialDataLoaded)
+                  child: _mainWidget(
+                      shouldReloadOnStart: !_block.initialDataLoaded,
+                      appBarHeight: appBar.preferredSize.height
+                  )
                 ),
               ],
             )
@@ -43,20 +52,53 @@ class _CryptocurrencyListState extends State<CryptocurrencyList> {
   ////////////////////////////
   // Private
 
+  AppBar _appBar;
   CryptocurrencyBlock _block;
+  List<Cryptocurrency> _filteredCryptocurrencyList = List<Cryptocurrency>();
 
-  Widget _mainWidget({@required shouldReloadOnStart: bool}) {
+  Widget _mainWidget({@required shouldReloadOnStart: bool, @required appBarHeight: double}) {
     Widget list = StreamBuilder(stream: _block.cryptocurrencyList, builder: (context, snapshot) {
-      List<Cryptocurrency> _filteredCryptocurrencyList = List<Cryptocurrency>();
+
       if (snapshot.error == null && snapshot.data != null) {
         _filteredCryptocurrencyList = snapshot.data;
+      }
+
+      // Handle error and no data
+      if (_block.initialDataLoaded == true &&
+          (snapshot.error != null || _filteredCryptocurrencyList == null ||
+              _filteredCryptocurrencyList.length == 0)) {
+        return ListView(
+          children: [
+            SizedBox(
+                width: MediaQuery
+                    .of(context)
+                    .size
+                    .width,
+                height: MediaQuery
+                    .of(context)
+                    .size
+                    .height - 3 * appBarHeight,
+
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    Image.asset(
+                      'assets/generic/nothingfound.png',
+                    ),
+                    Text(snapshot.error != null ? 'Error occured' : 'Nothing found')
+                  ],
+                )
+            )
+          ],
+        );
       }
 
       return ListView.builder(
           itemCount: _filteredCryptocurrencyList.length,
           itemBuilder: (_, int idx) {
             return CryptocurrencyRow(
-                cyptocurrency: _filteredCryptocurrencyList[idx]
+                cryptocurrency: _filteredCryptocurrencyList[idx]
             );
           });
     });

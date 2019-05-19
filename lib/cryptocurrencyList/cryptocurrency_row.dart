@@ -3,39 +3,55 @@ import 'package:crypto_exchange/cryptocurrencyExchangeList/cryptocurrency_exchan
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-class CryptocurrencyRow extends StatelessWidget {
+class CryptocurrencyRow extends StatefulWidget {
+  final Cryptocurrency cryptocurrency;
 
-  final Cryptocurrency cyptocurrency;
+  const CryptocurrencyRow({Key key, this.cryptocurrency}) : super(key: key);
 
-  const CryptocurrencyRow({Key key, this.cyptocurrency}) : super(key: key);
+  @override
+  _CryptocurrencyRowState createState() => _CryptocurrencyRowState();
+}
+
+class _CryptocurrencyRowState extends State<CryptocurrencyRow> {
+
+  Image _cryptocurrencyIcon = null;
+
+  Future<Image> _buildImage() async {
+    return rootBundle.load(widget.cryptocurrency.iconUrl).then((value) {
+      _cryptocurrencyIcon = Image.memory(value.buffer.asUint8List());
+      return _cryptocurrencyIcon;
+    }).catchError((_) {
+      _cryptocurrencyIcon = Image.asset(
+        'assets/cryptocurrencyIcons/notFound.png',
+      );
+      return _cryptocurrencyIcon;
+    });
+  }
+
 
   @override
   Widget build(BuildContext context) {
-    Future<Image> _buildImage() async {
-      return rootBundle.load(cyptocurrency.iconUrl).then((value) {
-        return Image.memory(value.buffer.asUint8List());
-      }).catchError((_) {
-        return Image.asset(
-          'assets/cryptocurrencyIcons/notFound.png',
-        );
-      });
-    }
-
     return InkWell(
       child: ListTile(
         leading: FutureBuilder(future: _buildImage(), builder: (context, AsyncSnapshot<Image> image) {
-          return CircleAvatar(
-              child: image.data,
-              backgroundColor: Colors.transparent
+          return Hero(
+            tag: widget.cryptocurrency.id,
+            child: CircleAvatar(
+                child: image.data,
+                backgroundColor: Colors.transparent
+            ),
           );
         }),
 
-        title: Text('${cyptocurrency.name}'),
-        subtitle: Text('${cyptocurrency.symbol.toUpperCase()}'),
+        title: Text('${widget.cryptocurrency.name}'),
+        subtitle: Text('${widget.cryptocurrency.symbol.toUpperCase()}'),
       ),
       onTap: () {
         Navigator.of(context).push(MaterialPageRoute(
-            builder: (_) => CryptocurrencyExchangeList(cryptocurrency: cyptocurrency)
+            builder: (_) => CryptocurrencyExchangeList(
+                cryptocurrency: widget.cryptocurrency,
+                cryptocurrencyIcon: _cryptocurrencyIcon
+            )
         ));
       },
     );

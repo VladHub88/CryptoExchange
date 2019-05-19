@@ -13,9 +13,8 @@ class App extends StatelessWidget {
       cryptocurrencyManager: CryptocurrencyManager(),
       child: MaterialApp(
         home: CryptocurrencyList(),
-        theme: ThemeData(
-            primarySwatch: Colors.blueGrey
-        ),),
+        theme: ThemeData.dark(),
+      ),
     );
   }
 }
