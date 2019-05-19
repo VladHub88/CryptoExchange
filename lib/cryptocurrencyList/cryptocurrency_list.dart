@@ -27,7 +27,7 @@ class _CryptocurrencyListState extends State<CryptocurrencyList> {
 
   @override
   Widget build(BuildContext context) {
-    _appBar = AppBar(title: Text('Currency Exchange List'));
+    _appBar = AppBar(title: Text('Cryptocurrency List'));
 
     return Scaffold(
         appBar: _appBar,
