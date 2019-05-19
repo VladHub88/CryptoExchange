@@ -63,37 +63,6 @@ class _CryptocurrencyListState extends State<CryptocurrencyList> {
         _filteredCryptocurrencyList = snapshot.data;
       }
 
-      // Handle error and no data
-      if (_block.initialDataLoaded == true &&
-          (snapshot.error != null || _filteredCryptocurrencyList == null ||
-              _filteredCryptocurrencyList.length == 0)) {
-        return ListView(
-          children: [
-            SizedBox(
-                width: MediaQuery
-                    .of(context)
-                    .size
-                    .width,
-                height: MediaQuery
-                    .of(context)
-                    .size
-                    .height - 3 * appBarHeight,
-
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: <Widget>[
-                    Image.asset(
-                      'assets/generic/nothingfound.png',
-                    ),
-                    Text(snapshot.error != null ? 'Error occured' : 'Nothing found')
-                  ],
-                )
-            )
-          ],
-        );
-      }
-
       var resultList = NotificationListener(
           child: ListView.builder(
               itemCount: _filteredCryptocurrencyList.length,
