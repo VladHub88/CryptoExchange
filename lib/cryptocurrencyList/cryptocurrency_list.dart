@@ -94,13 +94,22 @@ class _CryptocurrencyListState extends State<CryptocurrencyList> {
         );
       }
 
-      return ListView.builder(
-          itemCount: _filteredCryptocurrencyList.length,
-          itemBuilder: (_, int idx) {
-            return CryptocurrencyRow(
-                cryptocurrency: _filteredCryptocurrencyList[idx]
-            );
-          });
+      var resultList = NotificationListener(
+          child: ListView.builder(
+              itemCount: _filteredCryptocurrencyList.length,
+              itemBuilder: (_, int idx) {
+                return CryptocurrencyRow(
+                    cryptocurrency: _filteredCryptocurrencyList[idx]
+                );
+              }),
+        onNotification: (t) {
+          if (t is ScrollStartNotification) {
+            FocusScope.of(context).requestFocus(new FocusNode());
+          }
+        },
+      );
+
+      return resultList;
     });
 
     var _refreshIndicator = RefreshIndicator(

@@ -22,7 +22,7 @@ class CryptocurrencyExchangeBlock {
       _initialDataLoaded = true;
       _marketsSubject.add(cryptocurrencyExchange.ticker.markets);
     }, onError: (error) {
-      _initialDataLoaded = true;
+      _initialDataLoaded = false;
     });
 
   ////////////////////////////

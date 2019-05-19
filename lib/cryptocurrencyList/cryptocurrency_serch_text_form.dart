@@ -35,6 +35,7 @@ class _CryptocurrencySearchTextFormState extends State<CryptocurrencySearchTextF
                   onPressed: () {
                     searchController.clear();
                     onChanged('');
+                    FocusScope.of(context).requestFocus(new FocusNode());
                   }),
           ),
           onChanged: (text) {

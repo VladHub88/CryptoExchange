@@ -47,6 +47,7 @@ class _CryptocurrencyRowState extends State<CryptocurrencyRow> {
         subtitle: Text('${widget.cryptocurrency.symbol.toUpperCase()}'),
       ),
       onTap: () {
+        FocusScope.of(context).requestFocus(new FocusNode());
         Navigator.of(context).push(MaterialPageRoute(
             builder: (_) => CryptocurrencyExchangeList(
                 cryptocurrency: widget.cryptocurrency,
