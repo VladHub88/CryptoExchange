@@ -11,15 +11,22 @@ class CryptocurrencyExchangeList extends StatefulWidget {
   final Cryptocurrency cryptocurrency;
   final Image cryptocurrencyIcon;
 
+
   const CryptocurrencyExchangeList({Key key, this.cryptocurrency, this.cryptocurrencyIcon}) : super(key: key);
 
   @override
   _CryptocurrencyExchangeListState createState() => _CryptocurrencyExchangeListState();
 }
 
-class _CryptocurrencyExchangeListState extends State<CryptocurrencyExchangeList> {
+class _CryptocurrencyExchangeListState extends State<CryptocurrencyExchangeList> with SingleTickerProviderStateMixin {
 
   AppBar get appBar => _appBar;
+
+  @override
+  void initState() {
+    _bounceController = new AnimationController(vsync: this, duration: Duration(milliseconds: 500));
+    _bounceAnimation = new CurvedAnimation(parent: _bounceController, curve: Curves.bounceOut);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -45,7 +52,7 @@ class _CryptocurrencyExchangeListState extends State<CryptocurrencyExchangeList>
 
     return Scaffold(
       appBar: appBar,
-      body: _mainWidget(appBarHeight: appBar.preferredSize.height)
+      body: _mainWidget(appBarHeight: appBar.preferredSize.height, animation: _bounceAnimation)
     );
   }
 
@@ -54,10 +61,13 @@ class _CryptocurrencyExchangeListState extends State<CryptocurrencyExchangeList>
   CryptocurrencyExchangeBlock _cryptocurrencyExchangeBlock;
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey = new GlobalKey<RefreshIndicatorState>();
   AppBar _appBar;
+  AnimationController _bounceController;
+  Animation<double> _bounceAnimation;
 
-  Widget _mainWidget({@required appBarHeight: double}) {
+  Widget _mainWidget({@required appBarHeight: double, @required animation: Animation}) {
     Widget _list = StreamBuilder(stream: _cryptocurrencyExchangeBlock.marketsStream, builder: (context, snapshot) {
       List<Market> _cryptocurrencyMarkets = List<Market>();
+
       _cryptocurrencyMarkets = snapshot.data;
       final listViewKey = GlobalKey();
 
@@ -65,6 +75,7 @@ class _CryptocurrencyExchangeListState extends State<CryptocurrencyExchangeList>
       if (_cryptocurrencyExchangeBlock.initialDataLoaded == true &&
           (snapshot.error != null || _cryptocurrencyMarkets == null ||
               _cryptocurrencyMarkets.length == 0)) {
+        _bounceController.forward();
         return ListView(
           children: [
             SizedBox(
@@ -76,15 +87,18 @@ class _CryptocurrencyExchangeListState extends State<CryptocurrencyExchangeList>
                   .of(context)
                   .size
                   .height -  3 * appBarHeight,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: <Widget>[
-                    Image.asset(
-                      'assets/generic/nothingfound.png',
-                    ),
-                    Text(snapshot.error != null ? 'Error occured' : 'Nothing found')
-                  ],
+                child: ScaleTransition(
+                  scale: animation,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: <Widget>[
+                      Image.asset(
+                        'assets/generic/nothingfound.png',
+                      ),
+                      Text(snapshot.error != null ? 'Error occured' : 'Nothing found')
+                    ],
+                  ),
                 )
             )
           ],
