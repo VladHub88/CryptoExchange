@@ -30,6 +30,12 @@ class _CryptocurrencySearchTextFormState extends State<CryptocurrencySearchTextF
           controller: searchController,
           decoration: InputDecoration(
             labelText: 'Search cryptocurrency',
+              suffixIcon: IconButton(
+                  icon: Icon(Icons.close),
+                  onPressed: () {
+                    searchController.clear();
+                    onChanged('');
+                  }),
           ),
           onChanged: (text) {
             onChanged(text);
